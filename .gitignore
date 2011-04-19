@@ -1,0 +1,8 @@
+tools/
+home/
+projects/
+repos/
+servers/
+
+settings/console/console.xml
+settings/mvn/settings.xml

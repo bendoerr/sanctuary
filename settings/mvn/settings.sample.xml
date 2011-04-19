@@ -1,0 +1,26 @@
+<settings>
+
+    <localRepository>${env.DEV_REPOS}/mvn</localRepository>
+
+    <proxies>
+    </proxies>
+
+    <servers>
+    </servers>
+
+    <mirrors>    
+    </mirrors>
+  
+    <profiles>
+        <profile>
+            <id>developer-settings-general</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <local.repository>${env.DEV_REPOS}\mvn</local.repository>                
+            </properties>
+        </profile>       
+    </profiles>
+
+</settings>
