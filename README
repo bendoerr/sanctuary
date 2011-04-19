@@ -1,0 +1,12 @@
+Sanctuary Development Tools Readme
+
+-- Create a shortcut to go.bat, or run it directly to get a
+   functional Development shell with access to all the tools.
+   
+-- As tools are needed install them into the tools directory
+   following the convention toolname-version.
+   
+-- Sanctuary is preconfigured for a handful of tools. Additional
+   configuration can be achieved though developer specific configs.
+   
+-- Do not maintain Git within Sanctuary. Git will not be happy.
