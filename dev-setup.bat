@@ -11,7 +11,8 @@ SET _GRAILS_VERSION=1.3.7
 SET _IDEA_VERSION=10.0.3
 SET _JMETER_VERSION=2.4
 SET _LIFT_VERSION=2.3
-SET _MAVEN_VERSION=2.0.11
+SET _MAVEN_VERSION=2.2.1
+SET _MONGODB_VERSION=1.8.1
 SET _NPP_VERSION=5.9
 SET _PUTTY_VERSION=0.60
 SET _SCALA_VERSION=2.8.1.final
@@ -26,7 +27,7 @@ SET SCRIPT_FULLPATH=%~f0
 
 REM -- Output some info to the user.
 ECHO.
-ECHO       ___               _                                  _   
+ECHO      ___               _                                  _   
 ECHO     /   \_____   _____^| ^| ___  _ __  _ __ ___   ___ _ __ ^| ^|_ 
 ECHO    / /\ / _ \ \ / / _ \ ^|/ _ \^| '_ \^| '_ ` _ \ / _ \ '_ \^| __^|
 ECHO   / /_//  __/\ V /  __/ ^| (_) ^| ^|_) ^| ^| ^| ^| ^| ^|  __/ ^| ^| ^| ^|_ 
@@ -204,6 +205,45 @@ SET M2_HOME=%DEV_TOOLS%\maven-%_MAVEN_VERSION%
 IF EXIST %M2_HOME% (ECHO  Maven ................. [X] %_MAVEN_VERSION%) ELSE (ECHO  Maven ................. [ ] %_MAVEN_VERSION%)
 SET MAVEN_OPTS=-server -Xms256m -Xmx1024m -Xmn128m -XX:PermSize=64m -XX:MaxPermSize=128m -Duser.home=%USERPROFILE%
 PATH %M2_HOME%\bin;%PATH%
+
+REM -- MongoDB
+SET MONGODB_HOME=%DEV_TOOLS%\mongodb-%_MONGODB_VERSION%
+PATH %MONGODB_HOME%\bin;%PATH%
+
+IF EXIST %MONGODB_HOME%\foo GOTO mdbHomeSet ELSE afterMdb
+	
+:mdbHomeSet
+REM -- Copy the sample MongoDB settings file into place. (On first run)
+IF NOT EXIST %DEV_STTGS%\mongodb\mongo.conf COPY %DEV_STTGS%\mongodb\mongo.sample.conf %DEV_STTGS%\mongodb\mongo.conf >NUL
+SET MONGODB_DATA_LOCATION=%DEV_SRVRS%\mongodb\data\db
+SET MONGODB_LOG_FILE=%DEV_SRVRS%\mongodb\data\mongo.log
+IF NOT EXIST %DEV_SRVRS%\mongodb mkdir %DEV_SRVRS%\mongodb
+IF NOT EXIST %DEV_SRVRS%\mongodb\data mkdir %DEV_SRVRS%\mongodb\data
+IF NOT EXIST %DEV_SRVRS%\mongodb\data\db mkdir %DEV_SRVRS%\mongodb\data\db
+CALL groovy %DEV_STTGS%\mongodb\MongoConfigParser.groovy >NUL
+
+REM -- Install the service if it is not installed
+REM -- Check by quering and looking for FAILED
+FOR /f "usebackq tokens=*" %%A in (`sc query MongoDB ^| find /C "FAILED"`) DO SET _MDB_NOT_INSTALLED=%%A
+IF 1==%_MDB_NOT_INSTALLED% START /HIGH CMD /C %MONGODB_HOME%\bin\mongod.exe --config %DEV_STTGS%\mongodb\mongo.conf --reinstall
+
+REM -- Start the service if it is not started
+FOR /f "usebackq tokens=*" %%A in (`sc query MongoDB ^| find /C "STOPPED"`) DO SET _MDB_STOPPED=%%A
+IF 1==%_MDB_STOPPED% @NET START MongoDB >NUL
+
+REM -- Print out the appropriate message
+FOR /f "usebackq tokens=*" %%A in (`sc query MongoDB ^| find /C "RUNNING"`) DO SET _MDB_RUNNING=%%A
+IF 1==%_MDB_RUNNING% (ECHO  MongoDb ......[RUNNING] [X] %_MONGODB_VERSION%) ELSE GOTO mdbNotRunning
+
+GOTO afterMdb
+
+:mdbNotRunning
+FOR /f "usebackq tokens=*" %%A in (`sc query MongoDB ^| find /C "STOPPED"`) DO SET _MDB_STOPPED=%%A
+IF 1==%_MDB_STOPPED% (ECHO  MongoDb ......[STOPPED] [X] %_MONGODB_VERSION%) ELSE (ECHO  MongoDb ......[TROUBLE] [X] %_MONGODB_VERSION%)
+
+GOTO afterMdb
+
+:afterMdb
 
 REM -- Notepad++ (Note, defaults to ANSI due to more plugins compatible with ANSI)
 SET NPP_HOME=%DEV_TOOLS%\npp-%_NPP_VERSION%
