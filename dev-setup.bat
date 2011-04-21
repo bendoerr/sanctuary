@@ -285,7 +285,7 @@ REM -- Default color for ls
 DOSKEY ls=ls --color $*
 
 REM -- Cygwin complains
-CYGWIN=nodosfilewarning
+SET CYGWIN=nodosfilewarning
 
 REM -- Load any custom development settings.
 IF EXIST %DEV_STTGS%\dev-setup-custom.bat CALL %DEV_STTGS%\dev-setup-custom.bat
