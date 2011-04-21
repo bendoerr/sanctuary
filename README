@@ -8,5 +8,6 @@ Sanctuary Development Tools Readme
    
 -- Sanctuary is preconfigured for a handful of tools. Additional
    configuration can be achieved though developer specific configs.
-   
--- Do not maintain Git within Sanctuary. Git will not be happy.
+
+-- If Sanctuary finds MongoDB it will install it as a windows
+   and start it up.

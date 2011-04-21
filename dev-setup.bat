@@ -167,6 +167,9 @@ SET CYGWIN_HOME=%DEV_TOOLS%\cygwin-%_CYGWIN_VERSION%
 IF EXIST %CYGWIN_HOME% (ECHO  Cygwin ................ [X] %_CYGWIN_VERSION%) ELSE (ECHO  Cygwin ................ [ ] %_CYGWIN_VERSION%)
 PATH %CYGWIN_HOME%\bin;%PATH%
 
+REM -- Cygwin might override the windows find command. So set up a refernce so that we can use it.
+SET WINFIND=C:\windows\system32\find.exe
+
 REM -- Gant
 SET GANT_HOME=%DEV_TOOLS%\gant-%_GANT_VERSION%
 IF EXIST %GANT_HOME% (ECHO  Gant .................. [X] %_GANT_VERSION%) ELSE (ECHO  Gant .................. [ ] %_GANT_VERSION%)
@@ -224,21 +227,21 @@ CALL groovy %DEV_STTGS%\mongodb\MongoConfigParser.groovy >NUL
 
 REM -- Install the service if it is not installed
 REM -- Check by quering and looking for FAILED
-FOR /f "usebackq tokens=*" %%A in (`sc query MongoDB ^| find /C "FAILED"`) DO SET _MDB_NOT_INSTALLED=%%A
+FOR /f "usebackq tokens=*" %%A in (`sc query MongoDB ^| %WINFIND% /C "FAILED"`) DO SET _MDB_NOT_INSTALLED=%%A
 IF 1==%_MDB_NOT_INSTALLED% START /HIGH CMD /C %MONGODB_HOME%\bin\mongod.exe --config %DEV_STTGS%\mongodb\mongo.conf --reinstall
 
 REM -- Start the service if it is not started
-FOR /f "usebackq tokens=*" %%A in (`sc query MongoDB ^| find /C "STOPPED"`) DO SET _MDB_STOPPED=%%A
+FOR /f "usebackq tokens=*" %%A in (`sc query MongoDB ^| %WINFIND% /C "STOPPED"`) DO SET _MDB_STOPPED=%%A
 IF 1==%_MDB_STOPPED% @NET START MongoDB >NUL
 
 REM -- Print out the appropriate message
-FOR /f "usebackq tokens=*" %%A in (`sc query MongoDB ^| find /C "RUNNING"`) DO SET _MDB_RUNNING=%%A
+FOR /f "usebackq tokens=*" %%A in (`sc query MongoDB ^| %WINFIND% /C "RUNNING"`) DO SET _MDB_RUNNING=%%A
 IF 1==%_MDB_RUNNING% (ECHO  MongoDb ......[RUNNING] [X] %_MONGODB_VERSION%) ELSE GOTO mdbNotRunning
 
 GOTO afterMdb
 
 :mdbNotRunning
-FOR /f "usebackq tokens=*" %%A in (`sc query MongoDB ^| find /C "STOPPED"`) DO SET _MDB_STOPPED=%%A
+FOR /f "usebackq tokens=*" %%A in (`sc query MongoDB ^| %WINFIND% /C "STOPPED"`) DO SET _MDB_STOPPED=%%A
 IF 1==%_MDB_STOPPED% (ECHO  MongoDb ......[STOPPED] [X] %_MONGODB_VERSION%) ELSE (ECHO  MongoDb ......[TROUBLE] [X] %_MONGODB_VERSION%)
 
 GOTO afterMdb
@@ -276,7 +279,13 @@ REM SET JAVA_OPTS=%JAVA_OPTS% -Dgov.epa.eis.showPageInfo=true
 REM SET MAVEN_OPTS=%MAVEN_OPTS% -Dgov.epa.eis.showPageInfo=true
 
 REM -- Set TERM for use with Git (which uses MingWin)
-SET TERM=msys
+SET TERM=cygwin
+
+REM -- Default color for ls
+DOSKEY ls=ls --color $*
+
+REM -- Cygwin complains
+CYGWIN=nodosfilewarning
 
 REM -- Load any custom development settings.
 IF EXIST %DEV_STTGS%\dev-setup-custom.bat CALL %DEV_STTGS%\dev-setup-custom.bat
