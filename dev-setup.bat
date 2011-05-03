@@ -277,8 +277,9 @@ GOTO sbtDone
 :sbtExists
 ECHO  SBT ................... [X] %_SBT_VERSION%
 IF NOT EXIST %SBT_HOME%\bin MKDIR %SBT_HOME%\bin
+SET SBT_JAR=%SBT_HOME%\sbt-launch-%_SBT_VERSION%.jar
 ECHO SET SBT_JAR=%SBT_HOME%\sbt-launch-%_SBT_VERSION%.jar > %SBT_HOME%\bin\sbt.bat
-ECHO java -Xmx512M -jar ^"%SBT_JAR%^" %* >> %SBT_HOME%\bin\sbt.bat
+ECHO java -XX:+CMSClassUnloadingEnabled -XX:MaxPermSize=256m -Xmx512M -Xss2M -jar ^"%SBT_JAR%^" %* >> %SBT_HOME%\bin\sbt.bat
 
 GOTO sbtDone
 
