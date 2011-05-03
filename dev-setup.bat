@@ -16,6 +16,7 @@ SET _MAVEN_VERSION=2.2.1
 SET _MONGODB_VERSION=1.8.1
 SET _NPP_VERSION=5.9
 SET _PUTTY_VERSION=0.60
+SET _SBT_VERSION=0.7.5
 SET _SCALA_VERSION=2.8.1.final
  
 REM -- Capture full path to the current script.
@@ -219,7 +220,7 @@ REM -- MongoDB
 SET MONGODB_HOME=%DEV_TOOLS%\mongodb-%_MONGODB_VERSION%
 PATH %MONGODB_HOME%\bin;%PATH%
 
-IF EXIST %MONGODB_HOME%\foo GOTO mdbHomeSet ELSE afterMdb
+IF EXIST %MONGODB_HOME%\foo GOTO mdbHomeSet ELSE GOTO afterMdb
 	
 :mdbHomeSet
 REM -- Copy the sample MongoDB settings file into place. (On first run)
@@ -266,6 +267,23 @@ IF EXIST %PUTTY_HOME% (ECHO  Putty ................. [X] %_PUTTY_VERSION%) ELSE 
 PATH %PUTTY_HOME%;%PATH%
 IF NOT EXIST %USERPROFILE%\.putty mkdir %USERPROFILE%\.putty
 SET PUTTY_KEYS=%USERPROFILE%\.putty
+
+REM -- SBT
+SET SBT_HOME=%DEV_TOOLS%\sbt-%_SBT_VERSION%
+IF EXIST %SBT_HOME% (GOTO sbtExists) ELSE (ECHO  SBT ................... [ ] %_SBT_VERSION%)
+
+GOTO sbtDone
+
+:sbtExists
+ECHO  SBT ................... [X] %_SBT_VERSION%
+IF NOT EXIST %SBT_HOME%\bin MKDIR %SBT_HOME%\bin
+ECHO SET SBT_JAR=%SBT_HOME%\sbt-launch-%_SBT_VERSION%.jar > %SBT_HOME%\bin\sbt.bat
+ECHO java -Xmx512M -jar ^"%SBT_JAR%^" %* >> %SBT_HOME%\bin\sbt.bat
+
+GOTO sbtDone
+
+:sbtDone
+PATH %SBT_HOME%\bin;%PATH%
 
 REM -- Scala
 SET SCALA_HOME=%DEV_TOOLS%\scala-%_SCALA_VERSION%
