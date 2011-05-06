@@ -55,7 +55,7 @@ PROMPT $_%computername%$s$b$s%username%$s$b$s$d$s$b$s$t$_$p$_$_$+$g$s
 
 REM -- Development environment directories.
 SET DEV_HOME=%SCRIPT_FILEPATH%
-SET USR_HOME=%DEV_HOME%home\%USERNAME%
+SET USR_HOME=%DEV_HOME%home\%USERNAME: =%
 SET DEV_PROJS=%DEV_HOME%projects
 SET DEV_REPOS=%DEV_HOME%repos
 SET DEV_SRVRS=%DEV_HOME%servers
