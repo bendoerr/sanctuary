@@ -1,7 +1,7 @@
 @ECHO OFF 
 
-SET _JAVA_VERSION=1.6.0_13
-SET _GROOVY_VERSION=1.7.10
+SET _JAVA_VERSION=1.6.0_25
+SET _GROOVY_VERSION=1.8.0
 SET _ANT_VERSION=1.8.2
 SET _CONSOLE_VERSION=2
 SET _CYGWIN_VERSION=1.7
@@ -220,8 +220,8 @@ REM -- MongoDB
 SET MONGODB_HOME=%DEV_TOOLS%\mongodb-%_MONGODB_VERSION%
 PATH %MONGODB_HOME%\bin;%PATH%
 
-IF EXIST %MONGODB_HOME%\foo GOTO mdbHomeSet ELSE GOTO afterMdb
-	
+IF EXIST %MONGODB_HOME% (GOTO mdbHomeSet) ELSE (GOTO mdbNotSet)
+
 :mdbHomeSet
 REM -- Copy the sample MongoDB settings file into place. (On first run)
 IF NOT EXIST %DEV_STTGS%\mongodb\mongo.conf COPY %DEV_STTGS%\mongodb\mongo.sample.conf %DEV_STTGS%\mongodb\mongo.conf >NUL
@@ -250,6 +250,11 @@ GOTO afterMdb
 :mdbNotRunning
 FOR /f "usebackq tokens=*" %%A in (`sc query MongoDB ^| %WINFIND% /C "STOPPED"`) DO SET _MDB_STOPPED=%%A
 IF 1==%_MDB_STOPPED% (ECHO  MongoDb ......[STOPPED] [X] %_MONGODB_VERSION%) ELSE (ECHO  MongoDb ......[TROUBLE] [X] %_MONGODB_VERSION%)
+
+GOTO afterMdb
+
+:mdbNotSet
+ECHO  MongoDb ............... [ ] %_MONGODB_VERSION%
 
 GOTO afterMdb
 
