@@ -16,8 +16,8 @@ SET _MAVEN_VERSION=2.2.1
 SET _MONGODB_VERSION=1.8.1
 SET _NPP_VERSION=5.9
 SET _PUTTY_VERSION=0.60
-SET _SBT_VERSION=0.7.5
-SET _SCALA_VERSION=2.8.1.final
+SET _SBT_VERSION=0.7.7
+SET _SCALA_VERSION=2.9.0.final
  
 REM -- Capture full path to the current script.
 REM -- The macros used below are somewhat obscure. They are available
