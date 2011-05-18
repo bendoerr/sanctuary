@@ -165,9 +165,22 @@ SET CONSOLE_HOME=%DEV_TOOLS%\console-%_CONSOLE_VERSION%
 IF EXIST %CONSOLE_HOME% (ECHO  Console ............... [X] %_CONSOLE_VERSION%) ELSE (ECHO  Console ............... [ ] %_CONSOLE_VERSION%)
 DOSKEY console=start %CONSOLE_HOME%\console.exe -c %DEV_STTGS%\console\console.xml
 
+REM -- Cygwin
 SET CYGWIN_HOME=%DEV_TOOLS%\cygwin-%_CYGWIN_VERSION%
-IF EXIST %CYGWIN_HOME% (ECHO  Cygwin ................ [X] %_CYGWIN_VERSION%) ELSE (ECHO  Cygwin ................ [ ] %_CYGWIN_VERSION%)
 PATH %CYGWIN_HOME%\bin;%PATH%
+IF EXIST %CYGWIN_HOME% GOTO cygwin 
+ECHO  Cygwin ................ [ ] %_CYGWIN_VERSION%
+GOTO afterCygwin
+
+:cygwin
+REM -- This is a fix to make cygwin think our home directory is the same home directory
+RM -r %CYGWIN_HOME%\home
+LN -s %DEV_HOME%home %CYGWIN_HOME%\home
+
+ECHO  Cygwin ................ [X] %_CYGWIN_VERSION%
+GOTO afterCygwin
+
+:afterCygwin
 
 REM -- Cygwin might override the windows find command. So set up a refernce so that we can use it.
 SET WINFIND=C:\windows\system32\find.exe
