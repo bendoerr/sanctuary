@@ -173,6 +173,9 @@ ECHO  Cygwin ................ [ ] %_CYGWIN_VERSION%
 GOTO afterCygwin
 
 :cygwin
+REM -- Cygwin complains
+SET CYGWIN=nodosfilewarning
+
 REM -- This is a fix to make cygwin think our home directory is the same home directory
 RM -r %CYGWIN_HOME%\home
 LN -s %DEV_HOME%home %CYGWIN_HOME%\home
@@ -210,7 +213,7 @@ SET IDEA_HOME=%DEV_TOOLS%\idea-%_IDEA_VERSION%
 IF EXIST %IDEA_HOME% (ECHO  Idea .................. [X] %_IDEA_VERSION%) ELSE (ECHO  Idea .................. [ ] %_IDEA_VERSION%)
 REM -- Don't add to path... We don't want their batch file!! (PATH %IDEA_HOME%\bin;%PATH%)
 SET IDEA_JDK=%JDK_HOME%
-SET IDEA_JVM_ARGS=-server -Xms512m -Xmx1024m -XX:MaxPermSize=300m -ea -Duser.home=%USERPROFILE%
+SET IDEA_JVM_ARGS=-Duser.home=%USERPROFILE%
 SET IDEA_PROPERTIES=%DEV_STTGS%\idea\idea.properties
 DOSKEY idea=%DEV_UTILS%\idea.bat $*
 
@@ -326,9 +329,6 @@ SET TERM=cygwin
 
 REM -- Default color for ls
 DOSKEY ls=ls --color $*
-
-REM -- Cygwin complains
-SET CYGWIN=nodosfilewarning
 
 REM -- Load any custom development settings.
 IF EXIST %DEV_STTGS%\dev-setup-custom.bat CALL %DEV_STTGS%\dev-setup-custom.bat

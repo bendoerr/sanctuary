@@ -25,7 +25,7 @@ goto :EOF
 
 :OK
 
-SET JAVA_EXE=%IDEA_JDK%\jre\bin\java.exe
+SET JAVA_EXE=%IDEA_JDK%\bin\java.exe
 IF NOT EXIST "%JAVA_EXE%" goto error
 
 IF "%IDEA_MAIN_CLASS_NAME%" == "" SET IDEA_MAIN_CLASS_NAME=com.intellij.idea.Main
@@ -39,10 +39,7 @@ SET ACC=
 FOR /F "delims=" %%i in (%IDEA_HOME%\bin\idea.exe.vmoptions) DO call %IDEA_HOME%\bin\append.bat "%%i"
 
 set REQUIRED_IDEA_JVM_ARGS=-Xbootclasspath/a:%IDEA_HOME%/lib/boot.jar %IDEA_PROPERTIES_PROPERTY% %REQUIRED_IDEA_JVM_ARGS%
-SET JVM_ARGS=%ACC% %REQUIRED_IDEA_JVM_ARGS%
-
-SET OLD_PATH=%PATH%
-SET PATH=%IDEA_HOME%\bin;%PATH%
+SET JVM_ARGS=%ACC% %REQUIRED_IDEA_JVM_ARGS% %IDEA_JVM_ARGS%
 
 SET CLASS_PATH=%IDEA_HOME%\lib\bootstrap.jar
 SET CLASS_PATH=%CLASS_PATH%;%IDEA_HOME%\lib\util.jar
@@ -60,7 +57,6 @@ IF NOT "%IDEA_CLASS_PATH%" == "" SET CLASS_PATH=%CLASS_PATH%;%IDEA_CLASS_PATH%
 
 START /D "%IDEA_HOME%\bin" /B "idea.exe" "%JAVA_EXE%" %JVM_ARGS% -cp "%CLASS_PATH%" %IDEA_MAIN_CLASS_NAME% %*
 
-SET PATH=%OLD_PATH%
 goto end
 :error
 echo ---------------------------------------------------------------------
